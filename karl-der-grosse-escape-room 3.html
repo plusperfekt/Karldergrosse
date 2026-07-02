@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Der Weg zur Kaiserkrone — Karl der Große</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#f2e5c3;
+    --parchment-dark:#e5d3a4;
+    --parchment-darker:#d8c186;
+    --ink:#3c2415;
+    --ink-soft:#5c4429;
+    --burgundy:#7c2331;
+    --burgundy-dark:#5a1a23;
+    --gold:#b8891f;
+    --gold-light:#e3c465;
+    --forest:#3f5b3b;
+    --line: rgba(60,36,21,0.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:
+      radial-gradient(ellipse at top, rgba(255,250,230,0.5), transparent 60%),
+      var(--parchment);
+    color:var(--ink);
+    font-family:'Nunito', sans-serif;
+  }
+
+  .kg-texture{
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+    opacity:0.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .kg-vignette{
+    position:fixed; inset:0; pointer-events:none; z-index:4;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(60,36,21,0.14) 100%);
+  }
+
+  /* ---------- HUD ---------- */
+  .kg-hud{
+    position:sticky; top:0; z-index:40;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 22px; gap:10px; flex-wrap:wrap;
+    background:linear-gradient(180deg, rgba(242,229,195,0.97), rgba(242,229,195,0.9));
+    border-bottom:2px solid var(--gold);
+  }
+  .kg-hud-title{
+    font-family:'Cinzel', serif; font-weight:600; font-size:14px;
+    color:var(--burgundy-dark); letter-spacing:0.03em;
+  }
+  .kg-hud-title span{display:block; font-family:'Nunito',sans-serif; font-weight:600; font-size:10.5px; letter-spacing:0.14em; color:var(--ink-soft); text-transform:uppercase; margin-top:2px;}
+  .kg-hud-clock{
+    display:flex; align-items:center; gap:7px;
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .kg-hud-crowns{display:flex; gap:5px; flex-wrap:wrap; max-width:230px;}
+  .kg-crown-dot{width:12px; height:12px; opacity:0.28; transition:opacity 0.3s, transform 0.3s;}
+  .kg-crown-dot.kg-lit{opacity:1; transform:scale(1.15);}
+
+  /* ---------- layout ---------- */
+  .kg-stage{
+    display:none; min-height:calc(100vh - 62px); width:100%;
+    align-items:center; justify-content:center;
+    padding:44px 18px;
+  }
+  .kg-stage.kg-active{display:flex;}
+
+  .kg-panel{
+    width:100%; max-width:680px;
+    background:linear-gradient(180deg, #f8eeda, #efe0b8);
+    border:2px solid var(--gold);
+    box-shadow:0 18px 40px rgba(60,36,21,0.18), inset 0 0 0 6px rgba(255,255,255,0.25);
+    border-radius:6px;
+    padding:36px 34px;
+    position:relative;
+  }
+
+  .kg-eyebrow{
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:11.5px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--burgundy); margin:0 0 8px;
+  }
+  h1.kg-title, h2.kg-title{
+    font-family:'Cinzel', serif; font-weight:700;
+    color:var(--ink); letter-spacing:0.01em; margin:0 0 16px;
+  }
+  h1.kg-title{font-size:clamp(24px,4.6vw,34px);}
+  h2.kg-title{font-size:clamp(19px,3.6vw,24px);}
+
+  p.kg-text{font-size:15.5px; line-height:1.75; margin:0 0 15px; color:var(--ink-soft);}
+  p.kg-text.kg-quiet{font-size:13.5px; color:#8a7856;}
+  p.kg-text b{color:var(--burgundy-dark);}
+  p.kg-riddle{
+    font-family:'Cinzel',serif; font-size:17px; line-height:2; color:var(--ink);
+    background:#fbf5e4; border:2px solid var(--gold); border-radius:5px;
+    padding:18px 20px; margin:16px 0; text-align:center;
+  }
+
+  .kg-btn{
+    font-family:'Nunito', sans-serif; font-weight:700;
+    background:var(--parchment); border:2px solid var(--burgundy);
+    color:var(--burgundy-dark);
+    padding:11px 22px; border-radius:5px;
+    font-size:13.5px; letter-spacing:0.02em;
+    cursor:pointer; transition:background 0.18s, color 0.18s, transform 0.1s;
+  }
+  .kg-btn:hover{background:var(--burgundy); color:#f8eeda;}
+  .kg-btn:active{transform:translateY(1px);}
+  .kg-btn:focus-visible{outline:3px solid var(--gold-light); outline-offset:2px;}
+  .kg-btn.kg-primary{background:var(--burgundy); color:#f8eeda; border-color:var(--burgundy-dark);}
+  .kg-btn.kg-primary:hover{background:var(--burgundy-dark);}
+  .kg-btn.kg-ghost{background:transparent; border-color:transparent; color:#8a7856; padding-left:0;}
+  .kg-btn.kg-ghost:hover{background:transparent; color:var(--burgundy);}
+  .kg-btn[disabled]{opacity:0.35; cursor:not-allowed; pointer-events:none;}
+
+  .kg-row{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:22px;}
+
+  .kg-code-progress{
+    display:flex; gap:10px; margin:18px 0 8px; font-family:'Cinzel',serif; font-size:26px;
+    color:#c9b788;
+  }
+  .kg-code-progress span.kg-filled{color:var(--burgundy);}
+
+  .kg-hint-box{
+    margin-top:14px; padding:12px 14px; border-left:3px solid var(--gold);
+    background:rgba(184,137,31,0.1); font-size:13.5px; color:var(--ink-soft);
+    border-radius:0 4px 4px 0; display:none;
+  }
+  .kg-hint-box.kg-shown{display:block;}
+
+  .kg-feedback{font-size:13.5px; margin-top:10px; min-height:18px; font-weight:700;}
+  .kg-feedback.kg-bad{color:var(--burgundy);}
+  .kg-feedback.kg-good{color:var(--forest);}
+
+  /* wax seal */
+  .kg-seal{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #a8283a, var(--burgundy-dark));
+    color:#f2e5c3; font-family:'Cinzel',serif; font-weight:700; font-size:13px;
+    margin-right:8px; transform:scale(0); opacity:0;
+    box-shadow:0 2px 4px rgba(0,0,0,0.3);
+  }
+  .kg-seal.kg-pop{animation:kg-seal-pop 0.5s ease-out forwards;}
+  @keyframes kg-seal-pop{
+    0%{transform:scale(2.2); opacity:0;}
+    60%{transform:scale(0.9); opacity:1;}
+    100%{transform:scale(1); opacity:1;}
+  }
+
+  /* ---------- quiz-style options (reused across several stations) ---------- */
+  .kg-options{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0;}
+  .kg-options.kg-locked{pointer-events:none;}
+  .kg-option{
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:14px;
+    background:#fbf5e4; border:2px solid var(--line); border-radius:5px;
+    padding:14px 10px; text-align:center; cursor:pointer; color:var(--ink);
+    transition:border-color 0.15s, background 0.15s;
+  }
+  .kg-option:hover{border-color:var(--gold);}
+  .kg-option.kg-correct{border-color:var(--forest); background:#e6efe2; color:var(--forest);}
+  .kg-option.kg-incorrect{border-color:var(--burgundy); background:#f4dfdf; color:var(--burgundy-dark);}
+
+  /* ---------- letters / syllables (anagram-style puzzles) ---------- */
+  .kg-letters{display:flex; gap:8px; margin:18px 0; flex-wrap:wrap; justify-content:center;}
+  .kg-letter{
+    min-width:42px; height:48px; display:flex; align-items:center; justify-content:center;
+    background:#fbf5e4; border:2px solid var(--gold); border-radius:5px;
+    font-family:'Cinzel',serif; font-weight:700; font-size:19px; color:var(--burgundy-dark);
+    padding:0 6px;
+  }
+  .kg-letter.kg-syllable{font-size:15px; padding:0 12px;}
+  .kg-input-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .kg-input{
+    font-family:'Nunito',sans-serif; font-weight:700;
+    background:#fbf5e4; border:2px solid var(--line); border-radius:5px; color:var(--ink);
+    padding:11px 14px; font-size:14.5px; letter-spacing:0.06em;
+    flex:1; min-width:170px;
+  }
+  .kg-input:focus{outline:none; border-color:var(--gold);}
+
+  /* ---------- cipher ---------- */
+  .kg-cipher-note{
+    font-family:'Cinzel',serif; font-weight:700; font-size:26px; letter-spacing:0.3em;
+    background:#fbf5e4; border:2px solid var(--gold); border-radius:5px;
+    padding:16px; margin:16px 0; text-align:center; color:var(--burgundy-dark);
+  }
+  .kg-cipher-table{
+    display:grid; grid-template-columns:repeat(13,1fr); gap:1px;
+    font-size:11px; text-align:center; margin:14px 0 6px;
+    background:var(--line); border:1px solid var(--line); border-radius:4px; overflow:hidden;
+  }
+  .kg-cipher-table div{background:#fbf5e4; padding:6px 0; color:var(--ink-soft);}
+  .kg-cipher-table div.kg-cipher-top{color:var(--burgundy-dark); font-weight:800; background:#f3e6c4;}
+
+  /* ---------- ordering ---------- */
+  .kg-events{display:flex; flex-direction:column; gap:9px; margin:18px 0;}
+  .kg-event-card{
+    display:flex; align-items:center; gap:14px;
+    background:#fbf5e4; border:2px solid var(--line); border-radius:5px;
+    padding:11px 16px; cursor:pointer; transition:border-color 0.15s, background 0.15s;
+  }
+  .kg-event-card:hover{border-color:var(--gold);}
+  .kg-event-card.kg-picked{border-color:var(--forest); background:#e6efe2;}
+  .kg-event-badge{
+    width:26px; height:26px; border-radius:50%; background:var(--parchment-darker);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cinzel',serif; font-weight:700; font-size:12px; color:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .kg-event-card.kg-picked .kg-event-badge{background:var(--forest); color:#fff;}
+  .kg-event-text{font-size:13.5px; font-weight:600; color:var(--ink);}
+  .kg-event-text small{display:block; font-weight:400; color:#8a7856; font-size:12px; margin-top:2px;}
+
+  /* ---------- final door / keypad ---------- */
+  .kg-keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:18px 0; max-width:260px;}
+  .kg-keypad button{
+    font-family:'Cinzel', serif; font-weight:700; font-size:19px;
+    background:#fbf5e4; border:2px solid var(--line); border-radius:5px; color:var(--ink);
+    padding:14px 0; cursor:pointer;
+  }
+  .kg-keypad button:hover{border-color:var(--gold);}
+  .kg-keypad button.kg-wide{grid-column:span 3; font-family:'Nunito',sans-serif; font-size:12px; letter-spacing:0.06em; font-weight:700;}
+  .kg-display{
+    font-family:'Cinzel', serif; font-size:24px; letter-spacing:0.3em;
+    background:#fbf5e4; border:2px solid var(--line); border-radius:5px; padding:13px 18px;
+    min-height:24px; color:var(--burgundy-dark); margin-top:8px;
+  }
+
+  /* ---------- win screen ---------- */
+  .kg-win-crown{width:78px; height:78px; margin:0 auto 14px;}
+  .kg-win-title{font-size:clamp(28px,5.6vw,42px);}
+  .kg-divider{width:100%; height:2px; background:var(--gold); margin:20px 0; opacity:0.6;}
+
+  /* ---------- leaderboard ---------- */
+  .kg-name-input{
+    font-family:'Nunito',sans-serif; font-weight:700;
+    background:#fbf5e4; border:2px solid var(--gold); border-radius:5px; color:var(--ink);
+    padding:12px 16px; font-size:15px; width:100%; max-width:320px; margin-top:6px;
+  }
+  .kg-name-input:focus{outline:none; border-color:var(--burgundy);}
+  .kg-leaderboard{width:100%; border-collapse:collapse; margin:16px 0; font-size:14px;}
+  .kg-leaderboard th{
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--ink-soft); text-align:left;
+    padding:6px 8px; border-bottom:2px solid var(--gold);
+  }
+  .kg-leaderboard td{padding:9px 8px; border-bottom:1px solid var(--line); color:var(--ink);}
+  .kg-leaderboard tr.kg-you{background:rgba(184,137,31,0.14);}
+  .kg-leaderboard td.kg-rank{font-family:'Cinzel',serif; font-weight:700; color:var(--burgundy-dark); width:34px;}
+  .kg-leaderboard-empty{font-size:13.5px; color:#8a7856; margin:14px 0;}
+
+  @media (max-width:480px){
+    .kg-panel{padding:26px 20px;}
+    .kg-options{grid-template-columns:1fr;}
+    .kg-letter{min-width:34px; height:40px; font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="kg-texture"></div>
+<div class="kg-vignette"></div>
+
+<div class="kg-hud">
+  <div class="kg-hud-title">Aachen, im Jahr 800<span>Bote am Hofe Karls des Großen</span></div>
+  <div class="kg-hud-clock">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 2h12M6 22h12M8 2c0 5 8 5 8 10s-8 5-8 10M16 2c0 5-8 5-8 10s8 5 8 10" stroke="#b8891f" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span id="hudClock">20:00</span>
+  </div>
+  <div class="kg-hud-crowns" id="hudCrowns"></div>
+</div>
+
+<!-- INTRO -->
+<section class="kg-stage kg-active" id="stage-intro">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Eine wichtige Aufgabe</p>
+    <h1 class="kg-title">Die Krone ist verschwunden!</h1>
+    <p class="kg-text">Heute soll <b>Karl der Große</b> im Aachener Dom gekrönt werden. Doch kurz vor der Feier ist die Kaiserkrone spurlos verschwunden! Du bist sein Bote und sollst helfen, sie wiederzufinden.</p>
+    <p class="kg-text">Ein alter Mönch hat dir <b>zehn Prüfungen</b> gestellt, verteilt über den ganzen Hof. Nur bei <b>drei</b> davon bekommst du eine geheime Ziffer. Sammle alle drei Ziffern, öffne die Schatzkammer und rette die Krönung!</p>
+    <p class="kg-text kg-quiet">Es warten Reimrätsel, Geheimschriften, ein Logikrätsel, Kopfrechnen und mehr. Manche Aufgaben sind richtig knifflig — nimm dir Zeit und lies alles genau.</p>
+    <p class="kg-text" style="margin-bottom:6px;"><b>Wie heißt du, Bote?</b></p>
+    <input class="kg-name-input" id="playerName" type="text" placeholder="Dein Name" maxlength="24" autocomplete="off">
+    <div class="kg-row">
+      <button class="kg-btn kg-primary" onclick="startGame()">Los geht's!</button>
+      <button class="kg-btn kg-ghost" onclick="showStage('stage-leaderboard')">🏆 Bestenliste ansehen</button>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD (viewable before starting) -->
+<section class="kg-stage" id="stage-leaderboard">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Ehrentafel des Hofes</p>
+    <h2 class="kg-title">Die schnellsten Boten</h2>
+    <p class="kg-text kg-quiet">Diese Bestenliste wird nur auf diesem Gerät gespeichert.</p>
+    <div id="leaderboardContainer"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-primary" onclick="showStage('stage-intro')">Zurück</button>
+      <button class="kg-btn kg-ghost" onclick="resetLeaderboard()">Bestenliste leeren</button>
+    </div>
+  </div>
+</section>
+
+<!-- STAGE A: architecture quiz (digit) -->
+<section class="kg-stage" id="stage-a">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 1 von 10 — Die Pfalzkapelle</p>
+    <h2 class="kg-title">Eine besondere Bauform</h2>
+    <p class="kg-text">In Aachen ließ Karl der Große eine prächtige Kapelle bauen, die bis heute erhalten ist. Ihr Grundriss ist nicht rund und nicht rechteckig, sondern hat acht Ecken.</p>
+    <div class="kg-options" id="optionsA">
+      <div class="kg-option" data-answer="false">Rundtempel</div>
+      <div class="kg-option" data-answer="false">Basilika</div>
+      <div class="kg-option" data-answer="true">Oktogon</div>
+      <div class="kg-option" data-answer="false">Kreuzkuppelkirche</div>
+    </div>
+    <div class="kg-feedback" id="feedbackA"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintA')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextA" disabled onclick="showStage('stage-riddle1')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintA">Der Begriff kommt aus dem Griechischen und bedeutet "Achteck".</div>
+  </div>
+</section>
+
+<!-- STAGE RIDDLE1: rhyming riddle about the crown (gate) -->
+<section class="kg-stage" id="stage-riddle1">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 2 von 10 — Ein altes Rätsel</p>
+    <h2 class="kg-title">Was suchst du hier eigentlich?</h2>
+    <p class="kg-text">An der Klostertür hängt ein vergilbter Zettel mit einem Reim. Löse ihn, um zu beweisen, dass du wirklich verstehst, worum es in diesem Abenteuer geht.</p>
+    <p class="kg-riddle">Aus Gold gemacht, mit Schmuck besetzt,<br>auf einem Kopf wird sie gesetzt.<br>Wer sie trägt, der herrscht im Land —<br>gesucht wird sie in deiner Hand.</p>
+    <div class="kg-input-row">
+      <input class="kg-input" id="inputRiddle1" type="text" placeholder="Deine Antwort" autocomplete="off">
+      <button class="kg-btn kg-primary" onclick="checkRiddle1()">Bestätigen</button>
+    </div>
+    <div class="kg-feedback" id="feedbackRiddle1"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintRiddle1')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextRiddle1" disabled onclick="showStage('stage-b')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintRiddle1">Schau dir den Titel deines Abenteuers noch einmal an. Genau dieses Ding fehlt.</div>
+  </div>
+</section>
+
+<!-- STAGE B: anagram (digit) -->
+<section class="kg-stage" id="stage-b">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 3 von 10 — Treue zum Herrn</p>
+    <h2 class="kg-title">Ein verdrehtes Wort</h2>
+    <p class="kg-text">Im Mittelalter schwor ein Ritter oder Adliger seinem Herrn Treue und bekam dafür Land geliehen. So einen Mann nannte man mit einem Wort, dessen Buchstaben hier durcheinandergeraten sind:</p>
+    <div class="kg-letters" id="lettersB"></div>
+    <p class="kg-text kg-quiet">Das Wort hat sechs Buchstaben. Tippe deine Lösung unten ein.</p>
+    <div class="kg-input-row">
+      <input class="kg-input" id="inputB" type="text" placeholder="Dein Lösungswort" autocomplete="off">
+      <button class="kg-btn kg-primary" onclick="checkAnagram()">Bestätigen</button>
+    </div>
+    <div class="kg-feedback" id="feedbackB"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintB')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextB" disabled onclick="showStage('stage-logic')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintB">Dieses System aus Treue und geliehenem Land nennt man das "Lehnswesen". Der gesuchte Mann heißt ... beginnt mit V.</div>
+  </div>
+</section>
+
+<!-- STAGE LOGIC: 3-question "who is who" round (gate) -->
+<section class="kg-stage" id="stage-logic">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 4 von 10 — Wer war wer am Hofe?</p>
+    <h2 class="kg-title" id="logicTitle">Frage wird geladen …</h2>
+    <p class="kg-text kg-quiet" id="logicProgress"></p>
+    <p class="kg-text kg-quiet">Drei Namen tauchen in den Fragen immer wieder auf: <b>Karl der Große</b>, <b>Alkuin</b> und <b>Papst Leo III.</b> Ordne jeder Frage die richtige Person zu.</p>
+    <div class="kg-options" id="logicOptions"></div>
+    <div class="kg-feedback" id="feedbackLogic"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintLogic')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextLogic" disabled onclick="showStage('stage-cipher')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintLogic">Jede der drei Personen ist in genau einer Frage die richtige Antwort. Wenn du eine schon benutzt hast, kommt sie bei den anderen nicht noch einmal als Lösung infrage.</div>
+  </div>
+</section>
+
+<!-- STAGE CIPHER: shift cipher (gate) -->
+<section class="kg-stage" id="stage-cipher">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 5 von 10 — Die Geheimschrift</p>
+    <h2 class="kg-title">Entschlüssle das Wort</h2>
+    <p class="kg-text">Am Hofe wurden manchmal geheime Botschaften mit einer Verschiebe-Schrift geschrieben: Jeder Buchstabe wird durch den Buchstaben ersetzt, der <b>einen Platz weiter</b> im Alphabet steht (A wird zu B, B wird zu C, und so weiter).</p>
+    <div class="kg-cipher-note">LBJTFS</div>
+    <div class="kg-cipher-table" id="cipherTable"></div>
+    <p class="kg-text kg-quiet">Suche jeden Buchstaben der Geheimbotschaft in der <b>unteren</b> Reihe und lies den Buchstaben, der genau darüber steht.</p>
+    <div class="kg-input-row">
+      <input class="kg-input" id="inputCipher" type="text" placeholder="Entschlüsseltes Wort" autocomplete="off">
+      <button class="kg-btn kg-primary" onclick="checkCipher()">Bestätigen</button>
+    </div>
+    <div class="kg-feedback" id="feedbackCipher"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintCipher')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextCipher" disabled onclick="showStage('stage-c')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintCipher">Das gesuchte Wort ist der Titel, den Karl der Große seit dem Jahr 800 trug.</div>
+  </div>
+</section>
+
+<!-- STAGE C: chronological order, 7 events (digit) -->
+<section class="kg-stage" id="stage-c">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 6 von 10 — Das Leben Karls</p>
+    <h2 class="kg-title">Bringe die Ereignisse in die richtige Reihenfolge</h2>
+    <p class="kg-text">Klicke alle sieben Karten der Reihe nach an — beginne mit dem, was zuerst geschah.</p>
+    <div class="kg-events" id="eventsC"></div>
+    <div class="kg-feedback" id="feedbackC"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintC')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextC" disabled onclick="showStage('stage-math')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintC">Erst die Geburt, dann die Königsherrschaft, dann Eroberungen. Die Bildungsreform kam kurz vor der Kaiserkrönung. Die Reichsteilung geschah erst viele Jahre nach Karls Tod.</div>
+  </div>
+</section>
+
+<!-- STAGE MATH: subtraction riddle (gate) -->
+<section class="kg-stage" id="stage-math">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 7 von 10 — Kopfrechnen</p>
+    <h2 class="kg-title">König oder Kaiser?</h2>
+    <p class="kg-text">Karl wurde bereits im Jahr <b>768</b> König der Franken. Erst im Jahr <b>800</b> wurde er zusätzlich zum Kaiser gekrönt.</p>
+    <p class="kg-text">Wie viele Jahre lang war Karl schon König, bevor er auch Kaiser wurde?</p>
+    <div class="kg-input-row">
+      <input class="kg-input" id="inputMath" type="number" placeholder="Anzahl Jahre" autocomplete="off">
+      <button class="kg-btn kg-primary" onclick="checkMath()">Bestätigen</button>
+    </div>
+    <div class="kg-feedback" id="feedbackMath"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintMath')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextMath" disabled onclick="showStage('stage-syllables')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintMath">Rechne: 800 minus 768.</div>
+  </div>
+</section>
+
+<!-- STAGE SYLLABLES: assemble a word from shuffled syllables (gate) -->
+<section class="kg-stage" id="stage-syllables">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 8 von 10 — Silbenrätsel</p>
+    <h2 class="kg-title">Setze das Wort zusammen</h2>
+    <p class="kg-text">Karl der Große sorgte dafür, dass an vielen Orten neue Gebäude entstanden, in denen Kinder lesen, schreiben und rechnen lernten — meist direkt neben einem Kloster. Die Silben des gesuchten Wortes liegen hier durcheinander:</p>
+    <div class="kg-letters" id="syllablesBox"></div>
+    <p class="kg-text kg-quiet">Finde die richtige Reihenfolge der Silben und tippe das ganze Wort unten ein.</p>
+    <div class="kg-input-row">
+      <input class="kg-input" id="inputSyllables" type="text" placeholder="Dein Lösungswort" autocomplete="off">
+      <button class="kg-btn kg-primary" onclick="checkSyllables()">Bestätigen</button>
+    </div>
+    <div class="kg-feedback" id="feedbackSyllables"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintSyllables')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextSyllables" disabled onclick="showStage('stage-truefalse')">Weiter</button>
+    </div>
+    <div class="kg-hint-box" id="hintSyllables">Das Wort beginnt mit der Silbe, die auch in "Kloster" steckt. Es hat vier Silben und endet auf "-schule".</div>
+  </div>
+</section>
+
+<!-- STAGE TRUEFALSE: 5 true/false statements (gate) -->
+<section class="kg-stage" id="stage-truefalse">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 9 von 10 — Wahr oder falsch?</p>
+    <h2 class="kg-title" id="tfTitle">Aussage wird geladen …</h2>
+    <p class="kg-text kg-quiet" id="tfProgress"></p>
+    <div class="kg-options" id="tfOptions"></div>
+    <div class="kg-feedback" id="feedbackTf"></div>
+    <div class="kg-row">
+      <button class="kg-btn kg-ghost" onclick="toggleHint('hintTf')">Hinweis</button>
+      <button class="kg-btn kg-primary" id="nextTf" disabled onclick="showStage('stage-final')">Weiter zur Schatzkammer</button>
+    </div>
+    <div class="kg-hint-box" id="hintTf">Lies jede Aussage zweimal. Manche klingen logisch, sind aber trotzdem falsch — und umgekehrt.</div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="kg-stage" id="stage-final">
+  <div class="kg-panel">
+    <p class="kg-eyebrow">Prüfung 10 von 10 — Die Schatzkammer</p>
+    <h2 class="kg-title">Öffne das Zahlenschloss</h2>
+    <p class="kg-text">Du hast alle zehn Prüfungen gemeistert. Drei davon haben dir eine geheime Ziffer gebracht. Zusammen ergeben sie eine berühmte Jahreszahl aus dem Leben Karls des Großen. Gib den dreistelligen Code ein, um die Schatzkammer zu öffnen.</p>
+    <div class="kg-code-progress" id="codeProgress"><span>_</span><span>_</span><span>_</span></div>
+    <div class="kg-display" id="finalDisplay">&nbsp;</div>
+    <div class="kg-keypad" id="finalKeypad"></div>
+    <div class="kg-feedback" id="feedbackFinal"></div>
+  </div>
+</section>
+
+<!-- WIN -->
+<section class="kg-stage" id="stage-win">
+  <div class="kg-panel" style="text-align:center;">
+    <svg class="kg-win-crown" viewBox="0 0 64 64" fill="none">
+      <path d="M6 44 L10 20 L22 32 L32 14 L42 32 L54 20 L58 44 Z" fill="#e3c465" stroke="#b8891f" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="6" y="44" width="52" height="8" rx="1.5" fill="#e3c465" stroke="#b8891f" stroke-width="2"/>
+      <circle cx="32" cy="14" r="3" fill="#7c2331"/>
+      <circle cx="10" cy="20" r="2.6" fill="#7c2331"/>
+      <circle cx="54" cy="20" r="2.6" fill="#7c2331"/>
+    </svg>
+    <p class="kg-eyebrow">Die Krönung ist gerettet</p>
+    <h1 class="kg-title kg-win-title">Du hast es geschafft!</h1>
+    <div class="kg-divider"></div>
+    <p class="kg-text">Die Schatzkammer öffnet sich, und die Kaiserkrone glänzt im Kerzenlicht. Rechtzeitig zur Zeremonie trägst du sie zurück in den Aachener Dom. Karl der Große kann gekrönt werden — dank dir!</p>
+    <p class="kg-text kg-quiet" id="winTime"></p>
+    <div class="kg-divider"></div>
+    <p class="kg-eyebrow" style="text-align:left;">Die Ehrentafel</p>
+    <div id="leaderboardContainerWin"></div>
+    <div class="kg-row" style="justify-content:center;">
+      <button class="kg-btn kg-primary" onclick="location.reload()">Noch einmal spielen</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* ---------------- timer (cosmetic) ---------------- */
+  let totalSeconds = 20*60;
+  let elapsed = 0;
+  let timerId = null;
+  let started = false;
+  let playerName = 'Unbekannter Bote';
+
+  function formatClock(sec, over){
+    const m = Math.floor(Math.abs(sec)/60).toString().padStart(2,'0');
+    const s = Math.floor(Math.abs(sec)%60).toString().padStart(2,'0');
+    return (over? '+':'') + m + ':' + s;
+  }
+  function tick(){
+    elapsed++;
+    const remaining = totalSeconds - elapsed;
+    const clockEl = document.getElementById('hudClock');
+    clockEl.textContent = remaining >= 0 ? formatClock(remaining,false) : formatClock(remaining,true);
+  }
+  function startGame(){
+    const nameVal = document.getElementById('playerName').value.trim();
+    if(nameVal) playerName = nameVal;
+    if(!started){ started = true; timerId = setInterval(tick, 1000); }
+    showStage('stage-a');
+  }
+
+  /* ---------------- stage management ---------------- */
+  const stageOrder = ['stage-intro','stage-leaderboard','stage-a','stage-riddle1','stage-b','stage-logic','stage-cipher','stage-c','stage-math','stage-syllables','stage-truefalse','stage-final','stage-win'];
+  const puzzleStages = ['stage-a','stage-riddle1','stage-b','stage-logic','stage-cipher','stage-c','stage-math','stage-syllables','stage-truefalse','stage-final'];
+  function renderCrowns(activeId){
+    const hud = document.getElementById('hudCrowns');
+    hud.innerHTML = '';
+    let lit;
+    if(activeId === 'stage-intro') lit = 0;
+    else if(activeId === 'stage-win') lit = puzzleStages.length;
+    else lit = puzzleStages.indexOf(activeId);
+    const total = puzzleStages.length;
+    for(let i=0;i<total;i++){
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const s = document.createElementNS(svgNS,'svg');
+      s.setAttribute('viewBox','0 0 24 24');
+      s.setAttribute('class','kg-crown-dot' + (i < lit ? ' kg-lit':''));
+      s.innerHTML = '<path d="M2 17 L4 8 L9 13 L12 5 L15 13 L20 8 L22 17 Z" fill="#b8891f"/><rect x="2" y="17" width="20" height="3" fill="#b8891f"/>';
+      hud.appendChild(s);
+    }
+  }
+  function showStage(id){
+    stageOrder.forEach(s => document.getElementById(s).classList.toggle('kg-active', s === id));
+    renderCrowns(id);
+    window.scrollTo(0,0);
+    if(id === 'stage-leaderboard'){
+      renderLeaderboard('leaderboardContainer', null);
+    }
+    if(id === 'stage-win' && timerId){
+      clearInterval(timerId);
+      const remaining = totalSeconds - elapsed;
+      const msg = remaining >= 0
+        ? ('Geschafft mit ' + formatClock(remaining,false) + ' auf der Uhr übrig.')
+        : ('Geschafft — du hast dir ' + formatClock(remaining,true) + ' mehr Zeit genommen. Das ist völlig in Ordnung!');
+      document.getElementById('winTime').textContent = msg;
+      const savedEntry = saveScore(playerName, elapsed);
+      renderLeaderboard('leaderboardContainerWin', savedEntry);
+    }
+  }
+  function toggleHint(id){ document.getElementById(id).classList.toggle('kg-shown'); }
+
+  /* ---------------- leaderboard (stored locally on this device/browser) ---------------- */
+  const LEADERBOARD_KEY = 'kg_leaderboard_karl_der_grosse';
+  function getLeaderboard(){
+    try{
+      const raw = localStorage.getItem(LEADERBOARD_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch(e){
+      return [];
+    }
+  }
+  function saveScore(name, seconds){
+    const entry = { name: name, seconds: seconds, ts: Date.now() };
+    try{
+      const list = getLeaderboard();
+      list.push(entry);
+      list.sort((a,b) => a.seconds - b.seconds);
+      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list.slice(0, 30)));
+    } catch(e){
+      /* localStorage nicht verfügbar (z.B. blockiert) - Spiel läuft trotzdem weiter */
+    }
+    return entry;
+  }
+  function resetLeaderboard(){
+    try{ localStorage.removeItem(LEADERBOARD_KEY); } catch(e){}
+    renderLeaderboard('leaderboardContainer', null);
+  }
+  function renderLeaderboard(containerId, highlightEntry){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    const list = getLeaderboard();
+    if(list.length === 0){
+      container.innerHTML = '<p class="kg-leaderboard-empty">Noch niemand hat die Krönung gerettet. Sei der oder die Erste!</p>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉'];
+    let rows = '';
+    list.slice(0, 10).forEach((entry, i) => {
+      const isYou = highlightEntry && entry.ts === highlightEntry.ts && entry.name === highlightEntry.name;
+      rows += '<tr' + (isYou ? ' class="kg-you"' : '') + '>' +
+        '<td class="kg-rank">' + (medals[i] || (i+1)) + '</td>' +
+        '<td>' + escapeHtml(entry.name) + (isYou ? ' <b>(du)</b>' : '') + '</td>' +
+        '<td>' + formatClock(entry.seconds, false) + '</td>' +
+      '</tr>';
+    });
+    container.innerHTML =
+      '<table class="kg-leaderboard"><thead><tr><th></th><th>Name</th><th>Zeit</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function popSeal(container){
+    const seal = document.createElement('span');
+    seal.className = 'kg-seal kg-pop';
+    seal.textContent = 'K';
+    container.prepend(seal);
+  }
+
+  /* ---------------- code fragments ---------------- */
+  const codeFragments = { a:null, b:null, c:null };
+  function updateCodeProgress(){
+    const spans = document.querySelectorAll('#codeProgress span');
+    const vals = [codeFragments.a, codeFragments.b, codeFragments.c];
+    vals.forEach((v,i) => {
+      spans[i].textContent = v ?? '_';
+      spans[i].classList.toggle('kg-filled', v !== null);
+    });
+  }
+
+  /* ================= generic sequential quiz runner (reused) ================= */
+  function createQuizRunner(opts){
+    const { questions, titleId, progressId, optionsId, feedbackId, nextBtnId, completeText } = opts;
+    let index = 0;
+    const titleEl = document.getElementById(titleId);
+    const progressEl = document.getElementById(progressId);
+    const optionsEl = document.getElementById(optionsId);
+    const feedbackEl = document.getElementById(feedbackId);
+    const nextBtn = document.getElementById(nextBtnId);
+
+    function render(){
+      optionsEl.innerHTML = '';
+      optionsEl.classList.remove('kg-locked');
+      const item = questions[index];
+      titleEl.textContent = item.q;
+      progressEl.textContent = 'Frage ' + (index+1) + ' von ' + questions.length;
+      item.options.forEach((opt, idx) => {
+        const d = document.createElement('div');
+        d.className = 'kg-option';
+        d.textContent = opt;
+        d.addEventListener('click', () => handleAnswer(d, idx, item.correct));
+        optionsEl.appendChild(d);
+      });
+    }
+    function handleAnswer(el, idx, correctIdx){
+      if(optionsEl.classList.contains('kg-locked')) return;
+      if(idx === correctIdx){
+        el.classList.add('kg-correct');
+        optionsEl.classList.add('kg-locked');
+        feedbackEl.textContent = 'Richtig!';
+        feedbackEl.className = 'kg-feedback kg-good';
+        setTimeout(() => {
+          index++;
+          if(index < questions.length){
+            feedbackEl.textContent = '';
+            render();
+          } else {
+            feedbackEl.innerHTML = '';
+            popSeal(feedbackEl);
+            feedbackEl.append(' ' + completeText);
+            feedbackEl.className = 'kg-feedback kg-good';
+            nextBtn.disabled = false;
+          }
+        }, 700);
+      } else {
+        el.classList.add('kg-incorrect');
+        setTimeout(()=>el.classList.remove('kg-incorrect'), 600);
+        feedbackEl.textContent = 'Das ist nicht richtig. Versuch es noch einmal!';
+        feedbackEl.className = 'kg-feedback kg-bad';
+      }
+    }
+    render();
+  }
+
+  /* ================= STAGE A: architecture quiz (digit 8) ================= */
+  document.querySelectorAll('#optionsA .kg-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if(codeFragments.a !== null) return;
+      const feedback = document.getElementById('feedbackA');
+      if(opt.dataset.answer === 'true'){
+        opt.classList.add('kg-correct');
+        codeFragments.a = 8;
+        updateCodeProgress();
+        feedback.innerHTML = '';
+        popSeal(feedback);
+        feedback.append(' Richtig! Erste Ziffer gefunden: 8');
+        feedback.className = 'kg-feedback kg-good';
+        document.getElementById('nextA').disabled = false;
+      } else {
+        opt.classList.add('kg-incorrect');
+        setTimeout(()=>opt.classList.remove('kg-incorrect'), 600);
+        feedback.textContent = 'Das ist nicht ganz richtig. Versuch es noch einmal!';
+        feedback.className = 'kg-feedback kg-bad';
+      }
+    });
+  });
+
+  /* ================= STAGE RIDDLE1: rhyming riddle (Krone, gate) ================= */
+  function checkRiddle1(){
+    const val = document.getElementById('inputRiddle1').value.trim().toUpperCase();
+    const feedback = document.getElementById('feedbackRiddle1');
+    if(val === 'KRONE' || val === 'DIE KRONE' || val === 'KAISERKRONE'){
+      feedback.innerHTML = '';
+      popSeal(feedback);
+      feedback.append(' Richtig! Gesucht war natürlich die Krone.');
+      feedback.className = 'kg-feedback kg-good';
+      document.getElementById('nextRiddle1').disabled = false;
+    } else {
+      feedback.textContent = 'Noch nicht ganz richtig. Lies den Reim noch einmal in Ruhe.';
+      feedback.className = 'kg-feedback kg-bad';
+    }
+  }
+
+  /* ================= STAGE B: anagram (VASALL, digit 0) ================= */
+  const SCRAMBLED = ['S','L','A','V','A','L'];
+  function buildLetters(){
+    const box = document.getElementById('lettersB');
+    SCRAMBLED.forEach(ch => {
+      const d = document.createElement('div');
+      d.className = 'kg-letter';
+      d.textContent = ch;
+      box.appendChild(d);
+    });
+  }
+  function checkAnagram(){
+    const val = document.getElementById('inputB').value.trim().toUpperCase();
+    const feedback = document.getElementById('feedbackB');
+    if(val === 'VASALL'){
+      codeFragments.b = 0;
+      updateCodeProgress();
+      feedback.innerHTML = '';
+      popSeal(feedback);
+      feedback.append(' Richtig! Zweite Ziffer gefunden: 0');
+      feedback.className = 'kg-feedback kg-good';
+      document.getElementById('nextB').disabled = false;
+    } else {
+      feedback.textContent = 'Noch nicht richtig. Schau dir die Buchstaben genau an!';
+      feedback.className = 'kg-feedback kg-bad';
+    }
+  }
+
+  /* ================= STAGE LOGIC: 3-question "who is who" round (gate) ================= */
+  const LOGIC = [
+    {q:'Wer wurde im Jahr 800 in Rom zum Kaiser gekrönt?', options:['Alkuin','Papst Leo III.','Karl der Große'], correct:2},
+    {q:'Welcher Gelehrte aus England leitete die Hofschule und kümmerte sich um Bildung?', options:['Karl der Große','Alkuin','Papst Leo III.'], correct:1},
+    {q:'Wer war das Oberhaupt der Kirche und setzte dem Kaiser die Krone auf?', options:['Papst Leo III.','Karl der Große','Alkuin'], correct:0}
+  ];
+
+  /* ================= STAGE CIPHER: shift +1, KAISER (gate) ================= */
+  function buildCipherTable(){
+    const table = document.getElementById('cipherTable');
+    const shift = 1;
+    const firstHalf = 'ABCDEFGHIJKLM'.split('');
+    const secondHalf = 'NOPQRSTUVWXYZ'.split('');
+    function shiftChar(ch){
+      const code = ch.charCodeAt(0) - 65;
+      return String.fromCharCode(((code + shift) % 26) + 65);
+    }
+    firstHalf.forEach(ch => {
+      const d = document.createElement('div'); d.className = 'kg-cipher-top'; d.textContent = ch; table.appendChild(d);
+    });
+    firstHalf.forEach(ch => {
+      const d = document.createElement('div'); d.textContent = shiftChar(ch); table.appendChild(d);
+    });
+    secondHalf.forEach(ch => {
+      const d = document.createElement('div'); d.className = 'kg-cipher-top'; d.textContent = ch; table.appendChild(d);
+    });
+    secondHalf.forEach(ch => {
+      const d = document.createElement('div'); d.textContent = shiftChar(ch); table.appendChild(d);
+    });
+  }
+  function checkCipher(){
+    const val = document.getElementById('inputCipher').value.trim().toUpperCase();
+    const feedback = document.getElementById('feedbackCipher');
+    if(val === 'KAISER'){
+      feedback.innerHTML = '';
+      popSeal(feedback);
+      feedback.append(' Richtig! Genau diesen Titel trug Karl seit 800.');
+      feedback.className = 'kg-feedback kg-good';
+      document.getElementById('nextCipher').disabled = false;
+    } else {
+      feedback.textContent = 'Noch nicht richtig. Prüfe die Tabelle noch einmal.';
+      feedback.className = 'kg-feedback kg-bad';
+    }
+  }
+
+  /* ================= STAGE C: chronological order, 7 events (digit 0) ================= */
+  const EVENTS = [
+    {year:742, text:'Karl wird geboren', order:0},
+    {year:768, text:'Karl wird König der Franken', order:1},
+    {year:774, text:'Karl erobert das Reich der Langobarden in Italien', order:2},
+    {year:789, text:'Bildungsreform: mehr und bessere Klosterschulen', order:3},
+    {year:800, text:'Karl wird zum Kaiser gekrönt', order:4},
+    {year:814, text:'Karl stirbt in Aachen', order:5},
+    {year:843, text:'Vertrag von Verdun: das Reich wird unter Karls Enkeln aufgeteilt', order:6}
+  ];
+  const DISPLAY_ORDER = [4,0,6,2,5,1,3]; // fixed shuffled display
+  let expectedNext = 0;
+
+  function buildEvents(){
+    const box = document.getElementById('eventsC');
+    DISPLAY_ORDER.forEach(origIdx => {
+      const ev = EVENTS[origIdx];
+      const card = document.createElement('div');
+      card.className = 'kg-event-card';
+      card.dataset.order = ev.order;
+      card.innerHTML = '<div class="kg-event-badge">?</div><div class="kg-event-text">' + ev.text + '<small>Jahr ' + ev.year + '</small></div>';
+      card.addEventListener('click', () => handleEventClick(card, ev.order));
+      box.appendChild(card);
+    });
+  }
+  function handleEventClick(card, order){
+    if(codeFragments.c !== null || card.classList.contains('kg-picked')) return;
+    const feedback = document.getElementById('feedbackC');
+    if(order === expectedNext){
+      card.classList.add('kg-picked');
+      card.querySelector('.kg-event-badge').textContent = (expectedNext+1);
+      expectedNext++;
+      feedback.textContent = '';
+      if(expectedNext === EVENTS.length){
+        codeFragments.c = 0;
+        updateCodeProgress();
+        feedback.innerHTML = '';
+        popSeal(feedback);
+        feedback.append(' Richtig einsortiert! Dritte Ziffer gefunden: 0');
+        feedback.className = 'kg-feedback kg-good';
+        document.getElementById('nextC').disabled = false;
+      }
+    } else {
+      feedback.textContent = 'Das war noch nicht die richtige Reihenfolge. Beginne noch einmal von vorn.';
+      feedback.className = 'kg-feedback kg-bad';
+      expectedNext = 0;
+      document.querySelectorAll('.kg-event-card').forEach(c => {
+        c.classList.remove('kg-picked');
+        c.querySelector('.kg-event-badge').textContent = '?';
+      });
+    }
+  }
+
+  /* ================= STAGE MATH: subtraction riddle (gate) ================= */
+  function checkMath(){
+    const val = parseInt(document.getElementById('inputMath').value, 10);
+    const feedback = document.getElementById('feedbackMath');
+    if(val === 32){
+      feedback.innerHTML = '';
+      popSeal(feedback);
+      feedback.append(' Richtig! 32 Jahre lag zwischen beiden Ereignissen.');
+      feedback.className = 'kg-feedback kg-good';
+      document.getElementById('nextMath').disabled = false;
+    } else {
+      feedback.textContent = 'Das stimmt noch nicht. Rechne noch einmal nach.';
+      feedback.className = 'kg-feedback kg-bad';
+    }
+  }
+
+  /* ================= STAGE SYLLABLES: assemble KLOSTERSCHULE (gate) ================= */
+  const SYLLABLES = ['SCHU','KLOS','LE','TER'];
+  function buildSyllables(){
+    const box = document.getElementById('syllablesBox');
+    SYLLABLES.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 'kg-letter kg-syllable';
+      d.textContent = s;
+      box.appendChild(d);
+    });
+  }
+  function checkSyllables(){
+    const val = document.getElementById('inputSyllables').value.trim().toUpperCase().replace(/\s/g,'');
+    const feedback = document.getElementById('feedbackSyllables');
+    if(val === 'KLOSTERSCHULE'){
+      feedback.innerHTML = '';
+      popSeal(feedback);
+      feedback.append(' Richtig! In der Klosterschule lernten Kinder lesen, schreiben und rechnen.');
+      feedback.className = 'kg-feedback kg-good';
+      document.getElementById('nextSyllables').disabled = false;
+    } else {
+      feedback.textContent = 'Noch nicht richtig. Probiere eine andere Reihenfolge der Silben.';
+      feedback.className = 'kg-feedback kg-bad';
+    }
+  }
+
+  /* ================= STAGE TRUEFALSE: 5 statements (gate) ================= */
+  const TRUEFALSE = [
+    {q:'Karl der Große konnte zwar lesen, aber nie richtig gut schreiben lernen.', options:['Wahr','Falsch'], correct:0},
+    {q:'Karl der Große wurde in Rom geboren.', options:['Wahr','Falsch'], correct:1},
+    {q:'Nach Karls Tod blieb das Frankenreich für immer ungeteilt.', options:['Wahr','Falsch'], correct:1},
+    {q:'Die Kaiserkrönung im Jahr 800 fand an Weihnachten statt.', options:['Wahr','Falsch'], correct:0},
+    {q:'Karl der Große wird bis heute manchmal "Vater Europas" genannt.', options:['Wahr','Falsch'], correct:0}
+  ];
+
+  /* ================= FINAL: keypad ================= */
+  let finalCodeInput = '';
+  const FINAL_CODE = '800';
+  function buildKeypad(){
+    const pad = document.getElementById('finalKeypad');
+    for(let i=1;i<=9;i++){
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.addEventListener('click', ()=>pressKey(i));
+      pad.appendChild(btn);
+    }
+    const zero = document.createElement('button');
+    zero.textContent = '0';
+    zero.addEventListener('click', ()=>pressKey(0));
+    pad.appendChild(zero);
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = 'Löschen';
+    clearBtn.className = 'kg-wide';
+    clearBtn.addEventListener('click', clearKey);
+    pad.appendChild(clearBtn);
+  }
+  function pressKey(n){
+    if(finalCodeInput.length >= 3) return;
+    finalCodeInput += n;
+    document.getElementById('finalDisplay').textContent = finalCodeInput;
+    if(finalCodeInput.length === 3) checkFinalCode();
+  }
+  function clearKey(){
+    finalCodeInput = '';
+    document.getElementById('finalDisplay').innerHTML = '&nbsp;';
+    document.getElementById('feedbackFinal').textContent = '';
+  }
+  function checkFinalCode(){
+    const feedback = document.getElementById('feedbackFinal');
+    if(finalCodeInput === FINAL_CODE){
+      feedback.textContent = 'Ein Klicken — das Schloss öffnet sich!';
+      feedback.className = 'kg-feedback kg-good';
+      setTimeout(()=>showStage('stage-win'), 900);
+    } else {
+      feedback.textContent = 'Das Schloss bleibt zu. Prüfe deine drei gefundenen Ziffern noch einmal.';
+      feedback.className = 'kg-feedback kg-bad';
+      setTimeout(clearKey, 700);
+    }
+  }
+
+  /* ---------------- init ---------------- */
+  buildLetters();
+  buildCipherTable();
+  buildEvents();
+  buildSyllables();
+  buildKeypad();
+  createQuizRunner({questions:LOGIC, titleId:'logicTitle', progressId:'logicProgress', optionsId:'logicOptions', feedbackId:'feedbackLogic', nextBtnId:'nextLogic', completeText:'Alle drei Personen richtig zugeordnet!'});
+  createQuizRunner({questions:TRUEFALSE, titleId:'tfTitle', progressId:'tfProgress', optionsId:'tfOptions', feedbackId:'feedbackTf', nextBtnId:'nextTf', completeText:'Alle fünf Aussagen richtig bewertet!'});
+  renderCrowns('stage-intro');
+</script>
+
+</body>
+</html>
